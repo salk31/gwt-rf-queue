@@ -11,15 +11,15 @@ Inherit the module in your gwt.xml file:
 Wire up the manager on the client:
 
 ```java
-  RequestFactory requests = ...
+  RequestFactory requestFactory = ...
   QosRequestTransport transport = new QosRequestTransport();
   QosManager manager = new QosManager();
   QosQueue root = new QosQueue();
   root.setTarget(manager);
   manager.start();
   
-  transport.setDefaultSource(primary);
-  requests.initialize(eventBus, transport);
+  transport.setDefaultSource(root);
+  requestFactory.initialize(eventBus, transport);
 ```
 
 * Create your version of the RequestFactoryServlet (you probably have probably done this already)

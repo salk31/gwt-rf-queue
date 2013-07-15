@@ -3,18 +3,18 @@ gwt-rf-queue
 
 How to use
 ----------
-* `<inherits name='uk.ac.diamond.gwt.rf.queue.GwtRfQueue' />`
+* Inherit the module in your gwt.xml file:
+<blockquote>
+<inherits name='uk.ac.diamond.gwt.rf.queue.GwtRfQueue' />
+</blockquote>
 * Wire up the manager on the client:
 <blockquote>
 RequestFactory requests = ...
 QosRequestTransport transport = new QosRequestTransport();
 QosManager manager = new QosManager();
-
 QosQueue root = new QosQueue();
 root.setTarget(manager);
-        
 manager.start();
-        
 transport.setDefaultSource(primary);
 requests.initialize(eventBus, transport);
 </blockquote>

@@ -22,14 +22,12 @@ Wire up the manager on the client:
   requestFactory.initialize(eventBus, transport);
 ```
 
-* Create your version of the RequestFactoryServlet (you probably have probably done this already)
+* Reference the decorated servlet in your web.xml file:
 
-```java
-  public class MyRequestFactoryServlet extends RequestFactoryServlet {
-  
-  public UasRequestFactoryServlet() {
-    QosSimpleRequestProcessor.decorate(this);
-  }
+```xml
+    <servlet>
+        <servlet-name>requestFactoryServlet</servlet-name>
+        <servlet-class>uk.ac.diamond.gwt.rf.queue.server.QosRequestFactoryServlet</servlet-class>
+    </servlet>
 ```
 
-* Refer to this servlet in your web.xml

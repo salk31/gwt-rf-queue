@@ -15,9 +15,9 @@ import com.google.gwt.dom.client.Document;
  */
 public class QosManager implements PipeTarget {
 
-    private List<QosEntry> list = new ArrayList<QosEntry>();
+    private final List<QosEntry> list = new ArrayList<QosEntry>();
 
-    private List<QosListener> listeners = new ArrayList<QosListener>();
+    private final List<QosListener> listeners = new ArrayList<QosListener>();
 
     private int retryCount;
 
@@ -123,6 +123,11 @@ public class QosManager implements PipeTarget {
                 listener.retryStarting(retryCount);
             }
         } else {
+            if (retryCount > 0) {
+                for (QosListener listener : listeners) {
+                    listener.retryEnding();
+                }
+            }
             retryCount = 0;
         }
     }

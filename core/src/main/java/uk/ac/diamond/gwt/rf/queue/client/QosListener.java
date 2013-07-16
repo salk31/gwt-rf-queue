@@ -12,4 +12,6 @@ public interface QosListener {
      * Transport error (so network or RequestFactory Transport error).
      */
     void retryStarting(int retryCount);
+
+    void retryEnding();
 }

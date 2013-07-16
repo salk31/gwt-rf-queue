@@ -98,16 +98,18 @@ public void destroy() {
   }
 
   @Override
-public void doFilter(ServletRequest req, ServletResponse resp,
+  public void doFilter(ServletRequest req, ServletResponse resp,
       FilterChain chain) throws IOException, ServletException {
 
+      HttpServletResponse httpResp = (HttpServletResponse) resp;
     if (isCookieSet(req, "networkOff")) {
+      httpResp.sendError(305);
       return;
     }
 
     if (isCookieSet(req, "authOff")) {
-      HttpServletResponse httpResp = (HttpServletResponse) resp;
-      httpResp.sendRedirect("http://somefake.auth.server.com/login.foo");
+
+      httpResp.setHeader("Location", "http://somefake.auth.server.com/login.foo");
       return;
     }
 
@@ -124,7 +126,7 @@ public void doFilter(ServletRequest req, ServletResponse resp,
   }
 
   @Override
-public void init(FilterConfig config) {
+  public void init(FilterConfig config) {
     backingStore = (PersonSource) config.getServletContext().getAttribute(
         SchoolCalendarService.class.getName());
     if (backingStore == null) {

@@ -16,9 +16,7 @@
 package com.google.gwt.sample.dynatablerf.client;
 
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import uk.ac.diamond.gwt.rf.queue.client.AuthFailureDetector;
@@ -42,10 +40,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryLogHandler;
-import com.google.web.bindery.requestfactory.shared.LoggingRequest;
 
 /**
  * The entry point class which performs the initial loading of the DynaTableRf
@@ -68,65 +65,83 @@ public class DynaTableRf implements EntryPoint {
   @UiField(provided = true)
   DayFilterWidget filter;
 
+  @UiField
+  Label queueLength;
+
+  @UiField
+  Label authStatus;
+
+  @UiField
+  Label retryCount;
+
   /**
    * This method sets up the top-level services used by the application.
    */
   @Override
-public void onModuleLoad() {
-//    GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-//      public void onUncaughtException(Throwable e) {
-//        log.log(Level.SEVERE, e.getMessage(), e);
-//      }
-//    });
+  public void onModuleLoad() {
+
+    Cookies.removeCookie("authOff");
+    Cookies.removeCookie("networkOff");
 
     final DynaTableRequestFactory requests = GWT.create(DynaTableRequestFactory.class);
 
 
-        QosRequestTransport transport = new QosRequestTransport();
-        QosManager manager = new QosManager();
-        manager.setRequestTransport(transport);
+    QosRequestTransport transport = new QosRequestTransport();
+    QosManager manager = new QosManager();
+    manager.setRequestTransport(transport);
 
-        QosQueue root = new QosQueue();
-        root.setTarget(manager);
-        manager.start();
+    QosQueue root = new QosQueue();
+    root.setTarget(manager);
+    manager.start();
 
-        transport.setDefaultSource(root);
-        requests.initialize(eventBus, transport);
+    transport.setDefaultSource(root);
+    requests.initialize(eventBus, transport);
 
     manager.addListener(new QosListener() {
-        @Override
-        public void tick(List<QosEntry> list) {
-            // TODO Auto-generated method stub
+      @Override
+      public void tick(List<QosEntry> list) {
+        queueLength.setText("" + list.size());
+      }
 
-        }
+      @Override
+      public void retryStarting(int retryCount2) {
+        retryCount.setText("" + retryCount2);
+      }
 
-        @Override
-        public void retryStarting(int retryCount) {
-            // TODO Auto-generated method stub
-
-        }
+    @Override
+    public void retryEnding() {
+        retryCount.setText("-");
+    }
     });
 
     transport.setAuthFailureDetector(new AuthFailureDetector() {
         @Override
         public boolean isLoginRedirect(Response response) {
             // works for things like CAS with spring integration.
-            return response.getHeader("Location") != null;
+            String location = response.getHeader("Location");
+            boolean authFail =  location != null && !location.isEmpty();
+
+            if (authFail) {
+                authStatus.setText("Failed");
+            } else {
+                authStatus.setText("OK");
+            }
+            return authFail;
         }
     });
 
 
     // Add remote logging handler
-    RequestFactoryLogHandler.LoggingRequestProvider provider = new RequestFactoryLogHandler.LoggingRequestProvider() {
-      @Override
-    public LoggingRequest getLoggingRequest() {
-        return requests.loggingRequest();
-      }
-    };
-    Logger.getLogger("").addHandler(new ErrorDialog().getHandler());
-    Logger.getLogger("").addHandler(
-        new RequestFactoryLogHandler(provider, Level.WARNING,
-            new ArrayList<String>()));
+//    RequestFactoryLogHandler.LoggingRequestProvider provider = new RequestFactoryLogHandler.LoggingRequestProvider() {
+//      @Override
+//    public LoggingRequest getLoggingRequest() {
+//        return requests.loggingRequest();
+//      }
+//    };
+//    Logger.getLogger("").addHandler(new ErrorDialog().getHandler());
+//    Logger.getLogger("").addHandler(
+//        new RequestFactoryLogHandler(provider, Level.WARNING,
+//            new ArrayList<String>()));
     FavoritesManager manager2 = new FavoritesManager(requests);
     PersonEditorWorkflow.register(eventBus, requests, manager2);
 

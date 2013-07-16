@@ -38,6 +38,12 @@
       <g:HorizontalPanel> 
         <g:Button ui:field="toggleNetwork">Toggle fake network</g:Button>
         <g:Button ui:field="toggleAuth">Toggle fake auth</g:Button>
+        <g:Label>&#160;&#160;Queue length:</g:Label>
+        <g:Label ui:field="queueLength" />
+        <g:Label>&#160;&#160;Auth status:</g:Label>
+        <g:Label ui:field="authStatus" />
+        <g:Label>&#160;&#160;Retry count:</g:Label>
+        <g:Label ui:field="retryCount" />
       </g:HorizontalPanel>
     </g:north>
     <g:east size="30">

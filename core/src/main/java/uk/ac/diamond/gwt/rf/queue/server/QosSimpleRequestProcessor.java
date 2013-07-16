@@ -31,13 +31,14 @@ public class QosSimpleRequestProcessor extends SimpleRequestProcessor {
         return batchResponse.toString();
     }
 
+    // TODO 00 request hook to fix this
     public static void decorate(RequestFactoryServlet servlet) {
         try {
             Field processorField = RequestFactoryServlet.class.getDeclaredField("processor");
             processorField.setAccessible(true);
 
             SimpleRequestProcessor original = (SimpleRequestProcessor) processorField.get(servlet);
-            Field serviceField = SimpleRequestProcessor.class.getField("service");
+            Field serviceField = SimpleRequestProcessor.class.getDeclaredField("service");
             serviceField.setAccessible(true);
 
             ServiceLayer originalServiceLayer = (ServiceLayer) serviceField.get(original);
@@ -45,7 +46,7 @@ public class QosSimpleRequestProcessor extends SimpleRequestProcessor {
             QosSimpleRequestProcessor processor = new QosSimpleRequestProcessor(originalServiceLayer);
             processorField.set(servlet, processor);
 
-            Field exceptionHandlerField = SimpleRequestProcessor.class.getField("exceptionHandler");
+            Field exceptionHandlerField = SimpleRequestProcessor.class.getDeclaredField("exceptionHandler");
             exceptionHandlerField.setAccessible(true);
 
             ExceptionHandler exceptionHandler = (ExceptionHandler) exceptionHandlerField.get(original);

@@ -3,12 +3,12 @@ gwt-rf-queue
 
 How to use
 ----------
-Inherit the module in your gwt.xml file:
+1) Inherit the module in your gwt.xml file:
 ```xml
 <inherits name='uk.ac.diamond.gwt.rf.queue.GwtRfQueue' />
 ```
 
-Wire up the manager on the client:
+2) Wire up the manager on the client:
 
 ```java
   RequestFactory requestFactory = ...
@@ -22,14 +22,12 @@ Wire up the manager on the client:
   requestFactory.initialize(eventBus, transport);
 ```
 
-* Create your version of the RequestFactoryServlet (you probably have probably done this already)
+3) Reference the decorated servlet in your web.xml file:
 
-```java
-  public class MyRequestFactoryServlet extends RequestFactoryServlet {
-  
-  public UasRequestFactoryServlet() {
-    QosSimpleRequestProcessor.decorate(this);
-  }
+```xml
+    <servlet>
+        <servlet-name>requestFactoryServlet</servlet-name>
+        <servlet-class>uk.ac.diamond.gwt.rf.queue.server.QosRequestFactoryServlet</servlet-class>
+    </servlet>
 ```
 
-* Refer to this servlet in your web.xml

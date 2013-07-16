@@ -35,9 +35,14 @@
   </ui:style>
   <g:DockLayoutPanel unit="EX" stylePrimaryName="{style.main}">
     <g:north size="5">
+      <g:Label>
+        Simulate network/auth conditions and see how the app behaves.
+      </g:Label>
+    </g:north>
+    <g:north size="5">
       <g:HorizontalPanel> 
-        <g:Button ui:field="toggleNetwork">Toggle fake network</g:Button>
-        <g:Button ui:field="toggleAuth">Toggle fake auth</g:Button>
+        <g:Button ui:field="toggleNetwork" title="Controls simulated network failure.">Toggle fake network</g:Button>
+        <g:Button ui:field="toggleAuth" title="Controls simulated auth failure.">Toggle fake auth</g:Button>
         <g:Label>&#160;&#160;Queue length:</g:Label>
         <g:Label ui:field="queueLength" />
         <g:Label>&#160;&#160;Auth status:</g:Label>

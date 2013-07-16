@@ -184,4 +184,14 @@ public class QosRequestTransport extends DefaultRequestTransport {
     public void nextMode(RequestTransport.TransportReceiver treceiver2) {
         treceiver = treceiver2;
     }
+
+    public AuthFailureDetector getAuthFailureDetector() {
+        return authFailureDetector;
+    }
+
+    public void setAuthFailureDetector(AuthFailureDetector p) {
+        this.authFailureDetector = p;
+    }
+
+
 }

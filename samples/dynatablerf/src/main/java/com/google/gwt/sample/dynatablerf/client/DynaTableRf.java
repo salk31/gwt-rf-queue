@@ -17,23 +17,31 @@ package com.google.gwt.sample.dynatablerf.client;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import uk.ac.diamond.gwt.rf.queue.client.AuthFailureDetector;
+import uk.ac.diamond.gwt.rf.queue.client.QosEntry;
+import uk.ac.diamond.gwt.rf.queue.client.QosListener;
 import uk.ac.diamond.gwt.rf.queue.client.QosManager;
 import uk.ac.diamond.gwt.rf.queue.client.QosQueue;
 import uk.ac.diamond.gwt.rf.queue.client.QosRequestTransport;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.sample.dynatablerf.client.widgets.DayFilterWidget;
 import com.google.gwt.sample.dynatablerf.client.widgets.FavoritesWidget;
 import com.google.gwt.sample.dynatablerf.client.widgets.SummaryWidget;
 import com.google.gwt.sample.dynatablerf.shared.DynaTableRequestFactory;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.requestfactory.gwt.client.RequestFactoryLogHandler;
@@ -74,16 +82,38 @@ public void onModuleLoad() {
     final DynaTableRequestFactory requests = GWT.create(DynaTableRequestFactory.class);
 
 
-            QosRequestTransport transport = new QosRequestTransport();
-            QosManager manager = new QosManager();
-            manager.setRequestTransport(transport);
+        QosRequestTransport transport = new QosRequestTransport();
+        QosManager manager = new QosManager();
+        manager.setRequestTransport(transport);
 
-            QosQueue root = new QosQueue();
-            root.setTarget(manager);
-            manager.start();
+        QosQueue root = new QosQueue();
+        root.setTarget(manager);
+        manager.start();
 
-            transport.setDefaultSource(root);
-            requests.initialize(eventBus, transport);
+        transport.setDefaultSource(root);
+        requests.initialize(eventBus, transport);
+
+    manager.addListener(new QosListener() {
+        @Override
+        public void tick(List<QosEntry> list) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void retryStarting(int retryCount) {
+            // TODO Auto-generated method stub
+
+        }
+    });
+
+    transport.setAuthFailureDetector(new AuthFailureDetector() {
+        @Override
+        public boolean isLoginRedirect(Response response) {
+            // works for things like CAS with spring integration.
+            return response.getHeader("Location") != null;
+        }
+    });
 
 
     // Add remote logging handler
@@ -114,5 +144,23 @@ public void onModuleLoad() {
 //          + " GWT distribution, use the 'ant devmode' target to launch"
 //          + " the DTRF server.");
 //    }
+  }
+
+  @UiHandler("toggleNetwork")
+  void doToggleNetwork(ClickEvent event) {
+    toggleCookie("networkOff");
+  }
+
+  @UiHandler("toggleAuth")
+  void doToggleAuth(ClickEvent event) {
+    toggleCookie("authOff");
+  }
+
+  private void toggleCookie(String name) {
+    if (Cookies.getCookie(name) == null) {
+      Cookies.setCookie(name, "true");
+    } else {
+      Cookies.removeCookie(name);
+    }
   }
 }

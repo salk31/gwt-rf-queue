@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,8 +16,6 @@
 package com.google.gwt.sample.dynatablerf.server;
 
 import static com.google.gwt.sample.dynatablerf.shared.DynaTableRequestFactory.SchoolCalendarRequest.ALL_DAYS;
-
-import com.google.gwt.sample.dynatablerf.domain.Person;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +27,11 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gwt.sample.dynatablerf.domain.Person;
 
 /**
  * The server side service class.
@@ -77,11 +80,38 @@ public class SchoolCalendarService implements Filter {
   private PersonSource backingStore;
   private ScheduleSource scheduleStore;
 
-  public void destroy() {
+  @Override
+public void destroy() {
   }
 
-  public void doFilter(ServletRequest req, ServletResponse resp,
+  private boolean isCookieSet(ServletRequest req, String name) {
+      HttpServletRequest httpReq = (HttpServletRequest) req;
+      Cookie[] cookies = httpReq.getCookies();
+      if (cookies != null) {
+        for (Cookie c : httpReq.getCookies()) {
+          if (name.equals(c.getName())) {
+            return true;
+          }
+        }
+      }
+      return false;
+  }
+
+  @Override
+public void doFilter(ServletRequest req, ServletResponse resp,
       FilterChain chain) throws IOException, ServletException {
+
+    if (isCookieSet(req, "networkOff")) {
+      return;
+    }
+
+    if (isCookieSet(req, "authOff")) {
+      HttpServletResponse httpResp = (HttpServletResponse) resp;
+      httpResp.sendRedirect("http://somefake.auth.server.com/login.foo");
+      return;
+    }
+
+
     try {
       ScheduleSource scheduleBacking = ScheduleSource.of(scheduleStore);
       SCHEDULE_SOURCE.set(scheduleBacking);
@@ -93,7 +123,8 @@ public class SchoolCalendarService implements Filter {
     }
   }
 
-  public void init(FilterConfig config) {
+  @Override
+public void init(FilterConfig config) {
     backingStore = (PersonSource) config.getServletContext().getAttribute(
         SchoolCalendarService.class.getName());
     if (backingStore == null) {

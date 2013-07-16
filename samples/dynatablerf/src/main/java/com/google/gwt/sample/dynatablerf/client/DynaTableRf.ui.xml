@@ -35,8 +35,10 @@
   </ui:style>
   <g:DockLayoutPanel unit="EX" stylePrimaryName="{style.main}">
     <g:north size="5">
-      <g:HTML styleName="{style.header}">School Schedule for Professors and Students
-      </g:HTML>
+      <g:HorizontalPanel> 
+        <g:Button ui:field="toggleNetwork">Toggle fake network</g:Button>
+        <g:Button ui:field="toggleAuth">Toggle fake auth</g:Button>
+      </g:HorizontalPanel>
     </g:north>
     <g:east size="30">
       <g:SplitLayoutPanel>

@@ -28,7 +28,7 @@ import uk.ac.diamond.gwt.rf.queue.client.QosRequestTransport;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.http.client.Response;
@@ -162,17 +162,17 @@ public class DynaTableRf implements EntryPoint {
   }
 
   @UiHandler("toggleNetwork")
-  void doToggleNetwork(ClickEvent event) {
-    toggleCookie("networkOff");
+  void doToggleNetwork(ValueChangeEvent<Boolean> event) {
+    toggleCookie("networkOff", event.getValue());
   }
 
   @UiHandler("toggleAuth")
-  void doToggleAuth(ClickEvent event) {
-    toggleCookie("authOff");
+  void doToggleAuth(ValueChangeEvent<Boolean> event) {
+    toggleCookie("authOff", event.getValue());
   }
 
-  private void toggleCookie(String name) {
-    if (Cookies.getCookie(name) == null) {
+  private void toggleCookie(String name, boolean active) {
+    if (active) {
       Cookies.setCookie(name, "true");
     } else {
       Cookies.removeCookie(name);

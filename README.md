@@ -22,6 +22,7 @@ Roadmap
 * TODO - Fix TransportEntry to not require Transport to be passed to it.
 * TODO - Rename AuthFailureDetector to something more generic about "response detector"?
 * TODO - Put in maven central.
+* TODO - Use standard GWT event mechanism rather than homebrew listeners. Support unregistering etc...
 
 
 How to use

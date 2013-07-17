@@ -8,7 +8,7 @@ We would like off the shelf module(s), ideally pure Java/GWT, that do:
 * Detect/retry auth failure.
 * Can drive the UI to indicate the RequestFactory is busy or idle.
 * Different "quality of service" for different requests.
-* Mechanism to send the contents of an Editor tree to the server multiple times and fire different service methods.
+* Mechanism to send the contents of an Editor tree to the server multiple times and fire different service methods. e.g. to support background validation on the server
 
 However, we ended up writing this.
 

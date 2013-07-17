@@ -21,6 +21,7 @@ Roadmap
 * TODO - Raise GWT feature requests to add hooks to remove the worst work arounds e.g. custom Processor.
 * TODO - Fix TransportEntry to not require Transport to be passed to it.
 * TODO - Rename AuthFailureDetector to something more generic about "response detector"?
+* TODO - Put in maven central.
 
 
 How to use
@@ -30,12 +31,13 @@ How to use
 <inherits name='uk.ac.diamond.gwt.rf.queue.GwtRfQueue' />
 ```
 
-2) Wire up the manager on the client:
+2) Wire up the manager on the client (very minimal, will just do network retry, no UI):
 
 ```java
   RequestFactory requestFactory = ...
   QosRequestTransport transport = new QosRequestTransport();
   QosManager manager = new QosManager();
+  manager.setRequestTransport(transport);
   QosQueue root = new QosQueue();
   root.setTarget(manager);
   manager.start();

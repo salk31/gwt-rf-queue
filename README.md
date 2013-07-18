@@ -10,7 +10,7 @@ We would like off the shelf module(s), ideally pure Java/GWT, that do:
 * Different "quality of service" for different requests.
 * Mechanism to send the contents of an Editor tree to the server multiple times and fire different service methods. e.g. to support background validation on the server
 
-However, we ended up writing this.
+However, we couldn't find it so we ended up writing this.
 
 Roadmap
 -------

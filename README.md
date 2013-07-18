@@ -14,6 +14,7 @@ However, we couldn't find it so we ended up writing this.
 
 Roadmap
 -------
+* TODO - GAE (or similar) public live version of the demo.
 * TODO - Exponential back-off for network retry.
 * TODO - Off the shelf UI components for feedback? Less generic? Just a GMail like component? Would make the demo much better.
 * TODO - Semi-respectable unit test coverage.

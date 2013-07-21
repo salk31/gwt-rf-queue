@@ -1,6 +1,8 @@
 gwt-rf-queue
 ============
 
+Simple demo http://gwt-rf-queue.appspot.com/ with gwt-rf-queue retrofitted to DynaTableRf.
+
 Features
 --------
 We would like off the shelf module(s), ideally pure Java/GWT, that do:
@@ -14,16 +16,12 @@ However, we couldn't find it so we ended up writing this.
 
 Roadmap
 -------
-* TODO - GAE (or similar) public live version of the demo.
-* TODO - Exponential back-off for network retry.
-* TODO - Off the shelf UI components for feedback? Less generic? Just a GMail like component? Would make the demo much better.
 * TODO - Semi-respectable unit test coverage.
 * TODO - Refactor the code to be at least readable.
 * TODO - Raise GWT feature requests to add hooks to remove the worst work arounds e.g. custom Processor.
 * TODO - Fix TransportEntry to not require Transport to be passed to it.
 * TODO - Rename AuthFailureDetector to something more generic about "response detector"?
 * TODO - Put in maven central.
-* TODO - Use standard GWT event mechanism rather than homebrew listeners. Support unregistering etc...
 
 
 How to use

@@ -42,7 +42,7 @@ public class NonAtomicBatch extends QosEntry implements PipeInput {
         for (QosEntry f : list) {
             f.fire(transport);
         }
-        transport.flush();
+        transport.flushBatch();
     }
 
     @Override

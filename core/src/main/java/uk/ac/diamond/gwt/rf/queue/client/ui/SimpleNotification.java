@@ -61,7 +61,6 @@ public class SimpleNotification implements QosEventHandler {
     @Override
     public void onQosEvent(QosEvent qosEvent) {
         if (qosEvent.getList().size() > 0) {
-            position();
             popup.show();
             if (qosEvent.getRetryCount() > 0) {
                 retryWidget.setVisible(true);
@@ -70,6 +69,7 @@ public class SimpleNotification implements QosEventHandler {
                 retryWidget.setVisible(false);
                 message.setText("Loading...");
             }
+            position();
         } else {
             popup.hide();
         }

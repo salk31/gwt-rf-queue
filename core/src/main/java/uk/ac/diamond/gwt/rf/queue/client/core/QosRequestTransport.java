@@ -33,20 +33,30 @@ public class QosRequestTransport extends DefaultRequestTransport {
 
     private static final Logger wireLogger = Logger.getLogger("UasWireActivityLogger");
 
+    static RequestTransport.TransportReceiver CAPTURE = new RequestTransport.TransportReceiver() {
+        @Override
+        public void onTransportSuccess(String payload) {
+        }
+
+        @Override
+        public void onTransportFailure(ServerFailure failure) {
+        }
+    };
+
     /**
      * (Request) Payload and Receiver
      */
     static class BatchedRequest {
         String payload;
         RequestTransport.TransportReceiver receiver;
-        RequestTransport.TransportReceiver treceiver;
+        RequestTransport.TransportReceiver receiverForEntry;
     }
 
     private List<BatchedRequest> batch;
 
     private PipeInput defaultSource;
 
-    private RequestTransport.TransportReceiver treceiver;
+    private RequestTransport.TransportReceiver nextReceiverForEntry;
 
     private AuthFailureDetector authFailureDetector;
 
@@ -58,7 +68,11 @@ public class QosRequestTransport extends DefaultRequestTransport {
         this.defaultSource = defaultSource;
     }
 
-    void flush() {
+    void startBatch() {
+        batch = new ArrayList<BatchedRequest>();
+    }
+
+    List<BatchedRequest> flushBatch() {
         StringBuilder payload2 = new StringBuilder();
 
         for (BatchedRequest request : batch) {
@@ -70,21 +84,20 @@ public class QosRequestTransport extends DefaultRequestTransport {
 
         sendBatch(payload2.toString(), batch);
 
+        List<BatchedRequest> orig = batch;
         batch = null;
+        return orig;
     }
 
-    void startBatch() {
-        batch = new ArrayList<BatchedRequest>();
-    }
+
 
     @Override
     public void send(java.lang.String payload, RequestTransport.TransportReceiver receiver) {
-        if (treceiver != null) {
-
+        if (nextReceiverForEntry != null) {
             BatchedRequest request = new BatchedRequest();
             request.payload = payload;
             request.receiver = receiver;
-            request.treceiver = treceiver;
+            request.receiverForEntry = nextReceiverForEntry;
 
             if (batch != null) {
                 batch.add(request);
@@ -93,11 +106,11 @@ public class QosRequestTransport extends DefaultRequestTransport {
             if (batch == null) {
                 batch = new ArrayList<BatchedRequest>();
                 batch.add(request);
-                flush();
             }
 
-            treceiver = null;
+            nextReceiverForEntry = null;
         } else {
+            // no receiver for QosEntry so direct request
             defaultSource.add(new TransportEntry(payload, receiver));
         }
     }
@@ -126,7 +139,7 @@ public class QosRequestTransport extends DefaultRequestTransport {
             public void onError(Request request, Throwable exception) {
                 wireLogger.log(Level.WARNING, "onError.SERVER_ERROR", exception);
                 for (BatchedRequest batchedRequest : currentBatch) {
-                    batchedRequest.treceiver.onTransportFailure(new ServerFailure(exception.getMessage()));
+                    batchedRequest.receiverForEntry.onTransportFailure(new ServerFailure(exception.getMessage()));
 
                     try {
                         // XXX not do this till retry fails?
@@ -144,8 +157,8 @@ public class QosRequestTransport extends DefaultRequestTransport {
                     for (BatchedRequest batchedRequest : currentBatch) {
 
                         // XXX only once per batch?
-                        if (batchedRequest.treceiver != null) {
-                            batchedRequest.treceiver.onTransportFailure(new ServerFailure("AUTH"));
+                        if (batchedRequest.receiverForEntry != null) {
+                            batchedRequest.receiverForEntry.onTransportFailure(new ServerFailure("AUTH"));
                         }
                     }
                 } else
@@ -155,9 +168,8 @@ public class QosRequestTransport extends DefaultRequestTransport {
                     String[] split = text.split(RequestFactoryQueue.DELIMITER);
                     int i = 0;
                     for (String x : split) {
-
-                        if (currentBatch.get(i).treceiver != null) {
-                            currentBatch.get(i).treceiver.onTransportSuccess(x);
+                        if (currentBatch.get(i).receiverForEntry != null) {
+                            currentBatch.get(i).receiverForEntry.onTransportSuccess(x);
                         }
                         try {
                             currentBatch.get(i).receiver.onTransportSuccess(x);
@@ -173,25 +185,15 @@ public class QosRequestTransport extends DefaultRequestTransport {
                     String message = "onResponseReceived.SERVER_ERROR" + " " + response.getStatusCode() + " " + response.getText();
                     wireLogger.warning(message);
                     for (BatchedRequest batchedRequest : currentBatch) {
-                        batchedRequest.treceiver.onTransportFailure(new ServerFailure(message));
+                        batchedRequest.receiverForEntry.onTransportFailure(new ServerFailure(message));
                     }
                 }
             }
         };
     }
 
-    /**
-     * Ensure the batch is closed. XXX Fail if not?
-     */
-    public List<BatchedRequest> clear() {
-        List<BatchedRequest> orig = batch;
-        batch = null;
-        return orig;
-    }
-
-
-    public void nextMode(RequestTransport.TransportReceiver treceiver2) {
-        treceiver = treceiver2;
+    public void setNextReceiverForEntry(RequestTransport.TransportReceiver treceiver2) {
+        nextReceiverForEntry = treceiver2;
     }
 
     public AuthFailureDetector getAuthFailureDetector() {

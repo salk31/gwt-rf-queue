@@ -13,19 +13,15 @@ package uk.ac.diamond.gwt.rf.queue.client.core;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
-import com.google.web.bindery.requestfactory.shared.RequestTransport;
-import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
 // TODO 00 unit test this being re-fired on each retry
 /**
  * RequestFactory QosEntry.
  */
-class RequestContextEntry extends QosEntry {
+class RequestContextEntry extends QosEntryWithState {
     private final RequestContext requestContext;
 
     private final Receiver receiver;
-
-    private State state;
 
 
     public RequestContextEntry(Request request) {
@@ -52,38 +48,12 @@ class RequestContextEntry extends QosEntry {
     @Override
     public void fire(QosRequestTransport transport) {
         setState(State.PENDING);
-        transport.nextMode(new RequestTransport.TransportReceiver() {
-            @Override
-            public void onTransportSuccess(String payload) {
-                setState(State.DONE);
-                notifyChange();
-            }
-
-            @Override
-            public void onTransportFailure(ServerFailure failure) {
-                setState(State.FAILED);
-                notifyChange();
-            }
-        });
+        transport.setNextReceiverForEntry(this);
 
         if (receiver == null) {
             requestContext.fire();
         } else {
             requestContext.fire(receiver);
         }
-    }
-
-    @Override
-    protected void reset() {
-        state = null;
-    }
-
-    @Override
-    public State getState() {
-        return state;
-    }
-
-    private void setState(State state) {
-        this.state = state;
     }
 }

@@ -22,29 +22,20 @@ import com.google.web.bindery.requestfactory.shared.ServerFailure;
 /**
  * An eagerly serialised RequestContext.
  */
-public class TransportEntry extends QosEntry {
+public class TransportEntry extends QosEntryWithState {
 
     private final String payload;
 
     private final RequestTransport.TransportReceiver receiver;
 
-    private State state;
+
 
     // TODO 00 unit test can create lots of these, fire when feel like it
     public TransportEntry(RequestContext requestContext, Receiver recv) {
         QosRequestTransport transport = (QosRequestTransport) requestContext.getRequestFactory().getRequestTransport();
         transport.startBatch();
 
-        // XXX remove the need for this
-        transport.nextMode(new RequestTransport.TransportReceiver() {
-            @Override
-            public void onTransportSuccess(String payload) {
-            }
-
-            @Override
-            public void onTransportFailure(ServerFailure failure) {
-            }
-        });
+        transport.setNextReceiverForEntry(QosRequestTransport.CAPTURE);
 
         if (recv == null) {
             requestContext.fire();
@@ -52,9 +43,11 @@ public class TransportEntry extends QosEntry {
             requestContext.fire(recv);
         }
 
-        List<BatchedRequest> b = transport.clear();
+        List<BatchedRequest> b = transport.flushBatch();
         payload = b.get(0).payload;
         receiver = b.get(0).receiver;
+
+        // close the RequestContext so can be re-used.
         try {
             receiver.onTransportFailure(new ServerFailure("GOO"));
         } catch (Throwable th) {
@@ -70,36 +63,9 @@ public class TransportEntry extends QosEntry {
 
     @Override
     public void fire(QosRequestTransport transport) {
-        // XXX cut n paste, move to super?
         setState(State.PENDING);
-        transport.nextMode(new RequestTransport.TransportReceiver() {
-            @Override
-            public void onTransportSuccess(String payload) {
-                setState(State.DONE);
-                notifyChange();
-            }
-
-            @Override
-            public void onTransportFailure(ServerFailure failure) {
-                setState(State.FAILED);
-                notifyChange();
-            }
-        });
+        transport.setNextReceiverForEntry(this);
 
         transport.send(payload, receiver);
-    }
-
-    @Override
-    protected void reset() {
-        state = null;
-    }
-
-    @Override
-    public State getState() {
-        return state;
-    }
-
-    private void setState(State state) {
-        this.state = state;
     }
 }

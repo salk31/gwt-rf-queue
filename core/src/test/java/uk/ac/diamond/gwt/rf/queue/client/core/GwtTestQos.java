@@ -102,6 +102,22 @@ public class GwtTestQos extends GWTTestCase {
         assertEquals(0, handler.getLast().getRetryCount());
     }
 
+    public void testRetryNotClearedIfAllPending() {
+        FakeEntry fakeEntry = new FakeEntry();
+        pipe.add(fakeEntry);
+
+        fakeEntry.setState(QosEntry.State.FAILED);
+
+        manager.tock();
+
+        fakeEntry.setState(QosEntry.State.PENDING);
+
+        manager.tock();
+
+        assertEquals(1, handler.getLast().getRetryCount());
+
+    }
+
     @Override
     public String getModuleName() {
         return "uk.ac.diamond.gwt.rf.queue.GwtRfQueue";

@@ -19,24 +19,22 @@ import com.google.gwt.user.client.Command;
  */
 public abstract class CommandEntry extends QosEntry implements Command {
 
-    private String state;
+    private State state;
 
     @Override
-    public String getState() {
+    public State getState() {
         return state;
     }
 
     @Override
     public void fire(QosRequestTransport transport) {
-        state = "PENDING"; // XXX MAGIC
+        state = State.PENDING;
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
             @Override
             public void execute() {
                 CommandEntry.this.execute();
-                state = "DONE"; // XXX magic
+                state = State.DONE;
             }
-
         });
     }
 

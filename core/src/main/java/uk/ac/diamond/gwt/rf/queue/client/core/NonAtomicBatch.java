@@ -25,8 +25,8 @@ public class NonAtomicBatch extends QosEntry implements PipeInput {
 
     // XXX __ not done until all done?
     @Override
-    public String getState() {
-        String state = null;
+    public State getState() {
+        State state = null;
         for (QosEntry f : list) {
             if (f.getState() != null) {
                 state = f.getState();

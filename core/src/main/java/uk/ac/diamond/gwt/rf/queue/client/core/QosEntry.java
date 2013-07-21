@@ -19,10 +19,11 @@ import java.util.List;
  */
 public abstract class QosEntry implements Comparable<QosEntry> {
 
-    /**
-     * The done state.
-     */
-    protected static final String STATE_DONE = "DONE";
+    enum State {
+        FAILED,
+        PENDING,
+        DONE
+    }
 
     private final List<QosModifier> modifiers = new ArrayList<QosModifier>();
 
@@ -40,7 +41,7 @@ public abstract class QosEntry implements Comparable<QosEntry> {
 
     protected abstract void fire(QosRequestTransport transport);
 
-    protected abstract String getState();
+    protected abstract State getState();
 
     protected List<QosModifier> getModifiers() {
         return modifiers;
@@ -51,7 +52,7 @@ public abstract class QosEntry implements Comparable<QosEntry> {
     }
 
     protected boolean isActive() {
-        return !STATE_DONE.equals(getState()) && getState() != null;
+        return !State.DONE.equals(getState()) && getState() != null;
     }
 
     /**

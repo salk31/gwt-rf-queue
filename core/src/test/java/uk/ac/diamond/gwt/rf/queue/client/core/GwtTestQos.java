@@ -1,16 +1,6 @@
 package uk.ac.diamond.gwt.rf.queue.client.core;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import uk.ac.diamond.gwt.rf.queue.client.core.KeepLatest;
-import uk.ac.diamond.gwt.rf.queue.client.core.NonAtomicBatch;
-import uk.ac.diamond.gwt.rf.queue.client.core.Priority;
-import uk.ac.diamond.gwt.rf.queue.client.core.QosEntry;
-import uk.ac.diamond.gwt.rf.queue.client.core.QosManager;
-import uk.ac.diamond.gwt.rf.queue.client.core.QosQueue;
-import uk.ac.diamond.gwt.rf.queue.client.core.QosRequestTransport;
-import uk.ac.diamond.gwt.rf.queue.client.core.RfEntry;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.web.bindery.requestfactory.shared.testing.FakeRequestContext;
@@ -20,7 +10,19 @@ import com.google.web.bindery.requestfactory.shared.testing.FakeRequestContext;
  */
 public class GwtTestQos extends GWTTestCase {
 
+    private final FakeHandler handler = new FakeHandler();
 
+    private final QosManager manager = new QosManager();
+
+    QosQueue pipe = new QosQueue();
+
+
+    @Override
+    public void gwtSetUp() {
+        pipe.setTarget(manager);
+
+        manager.addQosEventHandler(handler);
+    }
 
     public void testForEditorUsage() throws Exception {
 
@@ -68,47 +70,36 @@ public class GwtTestQos extends GWTTestCase {
 
 
     public void testDelayOnTransportFailure3() throws Exception {
-
-        final QosManager manager = new QosManager();
-
-        QosQueue pipe = new QosQueue();
-        pipe.setTarget(manager);
-
-        final List<Object> fired = new ArrayList<Object>();
-
-        QosEntry fakeEntry = new QosEntry() {
-            String state;
-            @Override
-            protected void fire(QosRequestTransport transport) {
-                fired.add("1");
-                state = "FAIL";
-                this.notifyChange();
-            }
-
-            @Override
-            protected String getState() {
-                return state;
-            }
-
-            @Override
-            protected void reset() {
-                state = null;
-            }
-        };
+        FakeEntry fakeEntry = new FakeEntry();
 
         pipe.add(fakeEntry);
 
         manager.tick();
-        assertEquals(1, fired.size());
+        assertEquals(1, fakeEntry.getFiredCount());
+
+        fakeEntry.setState(QosEntry.State.FAILED);
 
         manager.tick();
-        assertEquals(1, fired.size());
+        assertEquals(1, fakeEntry.getFiredCount());
 
-        manager.retry();
-        manager.tick();
-        assertEquals(2, fired.size());
+        manager.tock();
+        assertEquals(2, fakeEntry.getFiredCount());
         // should be there marked FAIL but not execute again
 
+    }
+
+    public void testClearRetryOnTick() {
+        FakeEntry e0 = new FakeEntry();
+        pipe.add(e0);
+
+        e0.setState(QosEntry.State.FAILED);
+        manager.tock();
+
+        assertEquals(1, handler.getLast().getRetryCount());
+
+        e0.setState(QosEntry.State.DONE);
+
+        assertEquals(0, handler.getLast().getRetryCount());
     }
 
     @Override

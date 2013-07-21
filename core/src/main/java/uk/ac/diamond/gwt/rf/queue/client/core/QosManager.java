@@ -47,15 +47,19 @@ public class QosManager implements PipeTarget {
         Scheduler.get().scheduleFixedPeriod(new RepeatingCommand() {
             @Override
             public boolean execute() {
-                if (retryCountDown == 0) {
-                    retry();
-                } else {
-                    retryCountDown--;
-                }
-                tick();
+                tock();
                 return true;
             }
         }, 1000);
+    }
+
+    void tock() {
+        if (retryCountDown == 0) {
+            retry();
+        } else {
+            retryCountDown--;
+        }
+        tick();
     }
 
     void preProcess() {
@@ -97,9 +101,16 @@ public class QosManager implements PipeTarget {
                     entry.fire(requestTransport);
                 }
             }
-            // XXX magic
-            if ("DONE".equals(entry.getState())) {
+
+            if (QosEntry.State.DONE.equals(entry.getState())) {
                 it.remove();
+            }
+        }
+        if (retryCount > 0) {
+            if (list.isEmpty()) {
+                // end retry
+                retryCount = 0;
+                retryCountDown = 0;
             }
         }
 
@@ -131,17 +142,13 @@ public class QosManager implements PipeTarget {
     void retry() {
         boolean backOff = false;
         for (QosEntry q : list) {
-            if ("FAIL".equals(q.getState())) {
+            if (QosEntry.State.FAILED.equals(q.getState())) {
                 q.reset();
                 backOff = true;
             }
         }
         if (retryCount > 0) {
-            if (list.isEmpty()) {
-                // end retry
-                retryCount = 0;
-                retryCountDown = 0;
-            } else {
+            if (!list.isEmpty()) {
                 // continue retry
                 retryCount++;
                 retryMax *= 2;

@@ -26,14 +26,14 @@ class RfEntry extends QosEntry {
 
     private final RequestContext requestContext;
 
-    private String state;
+    private State state;
 
     @Override
-    public String getState() {
+    public State getState() {
         return state;
     }
 
-    private void setState(String state) {
+    private void setState(State state) {
         this.state = state;
     }
 
@@ -60,17 +60,17 @@ class RfEntry extends QosEntry {
 
     @Override
     public void fire(QosRequestTransport transport) {
-        setState("PENDING");
+        setState(State.PENDING);
         transport.nextMode(new RequestTransport.TransportReceiver() {
             @Override
             public void onTransportSuccess(String payload) {
-                setState("DONE");
+                setState(State.DONE);
                 notifyChange();
             }
 
             @Override
             public void onTransportFailure(ServerFailure failure) {
-                setState("FAIL");
+                setState(State.FAILED);
                 notifyChange();
             }
         });

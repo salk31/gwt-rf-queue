@@ -203,7 +203,7 @@
           <sdkDir>${appengine.sdk.root}</sdkDir>
           <appDir>${project.build.directory}/DynaTableRf-${project.version}</appDir>
           <unpackVersion>${gae.version}</unpackVersion>
-          <appVersion>0-0-2</appVersion>
+          <appVersion>0-0-3</appVersion>
         </configuration>
       </plugin>
     </plugins>

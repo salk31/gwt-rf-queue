@@ -7,21 +7,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package uk.ac.diamond.gwt.rf.queue.client;
+package uk.ac.diamond.gwt.rf.queue.client.core;
+
+import com.google.gwt.http.client.Response;
 
 /**
- * Alter the QOS contract in some way.
  *
  */
-public class QosModifier {
-    void add(QosEntry e) {
-    }
-
-    float getScore(QosEntry e) {
-        return 1.0f;
-    }
-
-    protected boolean isBlocked(QosEntry e) {
-        return false;
-    }
+public interface AuthFailureDetector {
+    boolean isLoginRedirect(Response response);
 }

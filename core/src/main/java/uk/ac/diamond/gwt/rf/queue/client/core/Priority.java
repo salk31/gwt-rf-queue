@@ -7,7 +7,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package uk.ac.diamond.gwt.rf.queue.client;
+package uk.ac.diamond.gwt.rf.queue.client.core;
 
 /**
  * Set the priority given to a QosEntry.

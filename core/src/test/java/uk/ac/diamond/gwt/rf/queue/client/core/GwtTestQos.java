@@ -1,7 +1,16 @@
-package uk.ac.diamond.gwt.rf.queue.client;
+package uk.ac.diamond.gwt.rf.queue.client.core;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import uk.ac.diamond.gwt.rf.queue.client.core.KeepLatest;
+import uk.ac.diamond.gwt.rf.queue.client.core.NonAtomicBatch;
+import uk.ac.diamond.gwt.rf.queue.client.core.Priority;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosEntry;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosManager;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosQueue;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosRequestTransport;
+import uk.ac.diamond.gwt.rf.queue.client.core.RfEntry;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.web.bindery.requestfactory.shared.testing.FakeRequestContext;

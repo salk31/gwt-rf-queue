@@ -7,13 +7,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package uk.ac.diamond.gwt.rf.queue.client;
-
-import com.google.gwt.http.client.Response;
+package uk.ac.diamond.gwt.rf.queue.client.core;
 
 /**
- *
+ * Can be used as the target for a QosEntry.
  */
-public interface AuthFailureDetector {
-    boolean isLoginRedirect(Response response);
+public interface PipeTarget {
+    void add(QosEntry e);
 }

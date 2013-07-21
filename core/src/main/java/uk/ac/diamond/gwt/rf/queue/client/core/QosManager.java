@@ -7,7 +7,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package uk.ac.diamond.gwt.rf.queue.client;
+package uk.ac.diamond.gwt.rf.queue.client.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,17 +18,25 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 
 /**
  * Manage the pipe.
  */
 public class QosManager implements PipeTarget {
 
+    private final static int TIMER_PERIOD = 1000;
+
     private final List<QosEntry> list = new ArrayList<QosEntry>();
 
-    private final List<QosListener> listeners = new ArrayList<QosListener>();
+    private final HandlerManager handlerManager = new HandlerManager(this);
 
     private int retryCount;
+
+    private int retryCountDown;
+
+    private int retryMax;
 
     private QosRequestTransport requestTransport;
 
@@ -39,11 +47,15 @@ public class QosManager implements PipeTarget {
         Scheduler.get().scheduleFixedPeriod(new RepeatingCommand() {
             @Override
             public boolean execute() {
-                retry();
+                if (retryCountDown == 0) {
+                    retry();
+                } else {
+                    retryCountDown--;
+                }
                 tick();
                 return true;
             }
-        }, 2000);
+        }, 1000);
     }
 
     void preProcess() {
@@ -92,9 +104,7 @@ public class QosManager implements PipeTarget {
         }
 
         Document.get().getDocumentElement().setPropertyString("qosPending", "" + list.size());
-        for (QosListener listener : listeners) {
-            listener.tick(list);
-        }
+        handlerManager.fireEvent(new QosEvent(list, retryCount, retryCountDown * TIMER_PERIOD ));
     }
 
 
@@ -118,7 +128,7 @@ public class QosManager implements PipeTarget {
         return list;
     }
 
-    public void retry() {
+    void retry() {
         boolean backOff = false;
         for (QosEntry q : list) {
             if ("FAIL".equals(q.getState())) {
@@ -126,23 +136,27 @@ public class QosManager implements PipeTarget {
                 backOff = true;
             }
         }
-        if (backOff) {
+        if (retryCount > 0) {
+            if (list.isEmpty()) {
+                // end retry
+                retryCount = 0;
+                retryCountDown = 0;
+            } else {
+                // continue retry
+                retryCount++;
+                retryMax *= 2;
+                retryCountDown = retryMax;
+            }
+        } else if (backOff) {
+            // start retry
             retryCount++;
-            for (QosListener listener : listeners) {
-                listener.retryStarting(retryCount);
-            }
-        } else {
-            if (retryCount > 0) {
-                for (QosListener listener : listeners) {
-                    listener.retryEnding();
-                }
-            }
-            retryCount = 0;
+            retryMax = 2;
+            retryCountDown = retryMax;
         }
     }
 
-    public void addListener(QosListener qosListener) {
-        listeners.add(qosListener);
+    public HandlerRegistration addQosEventHandler(QosEventHandler handler) {
+        return handlerManager.addHandler(QosEvent.getType(), handler);
     }
 
     public QosRequestTransport getRequestTransport() {
@@ -153,5 +167,9 @@ public class QosManager implements PipeTarget {
         this.requestTransport = p;
     }
 
-
+    public void retryNow() {
+        retryCountDown = 0;
+        retryMax = 2;
+        tick();
+    }
 }

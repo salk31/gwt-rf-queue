@@ -7,11 +7,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package uk.ac.diamond.gwt.rf.queue.client;
+package uk.ac.diamond.gwt.rf.queue.client.core;
+
+import com.google.gwt.event.shared.EventHandler;
 
 /**
- * Can be used as the target for a QosEntry.
+ * QOS system listener for changes.
  */
-public interface PipeTarget {
-    void add(QosEntry e);
+public interface QosEventHandler extends EventHandler {
+    void onQosEvent(QosEvent qosEvent);
 }

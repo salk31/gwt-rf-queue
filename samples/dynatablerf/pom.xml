@@ -93,13 +93,7 @@
       <artifactId>gwt-rf-queue</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
-    
-    <dependency>
-      <groupId>net.kindleit</groupId>
-      <artifactId>gae-runtime</artifactId>
-      <version>${gae.version}</version>
-      <type>pom</type>
-    </dependency>
+
 
   </dependencies>
 
@@ -191,11 +185,11 @@
           </execution>
         </executions>
       </plugin>
-      
+       
       <plugin>
         <groupId>net.kindleit</groupId>
         <artifactId>maven-gae-plugin</artifactId>
-        <version>0.9.4</version>
+        <version>0.9.5</version>
         <dependencies>
           <dependency>
             <groupId>net.kindleit</groupId>
@@ -209,7 +203,7 @@
           <sdkDir>${appengine.sdk.root}</sdkDir>
           <appDir>${project.build.directory}/DynaTableRf-${project.version}</appDir>
           <unpackVersion>${gae.version}</unpackVersion>
-          <appVersion>0-0-1</appVersion>
+          <appVersion>0-0-2</appVersion>
         </configuration>
       </plugin>
     </plugins>

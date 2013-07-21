@@ -1,0 +1,15 @@
+.simpleNotification {
+  border-color: #f0c36d;
+  background-color: #f9edbe;
+
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.simpleNotification a {
+  text-decoration: underline;
+}

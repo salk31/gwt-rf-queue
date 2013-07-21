@@ -7,24 +7,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package uk.ac.diamond.gwt.rf.queue.client;
+package uk.ac.diamond.gwt.rf.queue.client.core;
 
 /**
- * Discard all but the latest entry.
+ * Alter the QOS contract in some way.
+ *
  */
-public class KeepLatest extends QosModifier {
-    private QosEntry latest;
-
-    @Override
+public class QosModifier {
     void add(QosEntry e) {
-        this.latest = e;
     }
 
-    @Override
     float getScore(QosEntry e) {
-        if (e == latest) {
-            return 1.0f;
-        }
-        return 0.0f;
+        return 1.0f;
+    }
+
+    protected boolean isBlocked(QosEntry e) {
+        return false;
     }
 }

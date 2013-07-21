@@ -7,20 +7,24 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package uk.ac.diamond.gwt.rf.queue.client;
-
-import java.util.List;
+package uk.ac.diamond.gwt.rf.queue.client.core;
 
 /**
- * QOS system listener for changes.
+ * Discard all but the latest entry.
  */
-public interface QosListener {
-    void tick(List<QosEntry> list);
+public class KeepLatest extends QosModifier {
+    private QosEntry latest;
 
-    /**
-     * Transport error (so network or RequestFactory Transport error).
-     */
-    void retryStarting(int retryCount);
+    @Override
+    void add(QosEntry e) {
+        this.latest = e;
+    }
 
-    void retryEnding();
+    @Override
+    float getScore(QosEntry e) {
+        if (e == latest) {
+            return 1.0f;
+        }
+        return 0.0f;
+    }
 }

@@ -55,6 +55,7 @@
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <dependencies>
                   <!-- Need to run the RF Validation tool. This works on both the command-line
                        and in Eclipse, provided that m2e-apt is installed. -->
@@ -69,6 +70,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
+                <version>2.5.1</version>
                 <configuration>
                     <modules>
                         <module>uk.ac.diamond.gwt.rf.queue.GwtRfQueue</module>

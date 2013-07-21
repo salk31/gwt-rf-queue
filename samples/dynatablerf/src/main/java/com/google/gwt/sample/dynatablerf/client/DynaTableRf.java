@@ -16,15 +16,15 @@
 package com.google.gwt.sample.dynatablerf.client;
 
 
-import java.util.List;
 import java.util.logging.Logger;
 
-import uk.ac.diamond.gwt.rf.queue.client.AuthFailureDetector;
-import uk.ac.diamond.gwt.rf.queue.client.QosEntry;
-import uk.ac.diamond.gwt.rf.queue.client.QosListener;
-import uk.ac.diamond.gwt.rf.queue.client.QosManager;
-import uk.ac.diamond.gwt.rf.queue.client.QosQueue;
-import uk.ac.diamond.gwt.rf.queue.client.QosRequestTransport;
+import uk.ac.diamond.gwt.rf.queue.client.core.AuthFailureDetector;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosEvent;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosEventHandler;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosManager;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosQueue;
+import uk.ac.diamond.gwt.rf.queue.client.core.QosRequestTransport;
+import uk.ac.diamond.gwt.rf.queue.client.ui.SimpleNotification;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
@@ -97,20 +97,20 @@ public class DynaTableRf implements EntryPoint {
     transport.setDefaultSource(root);
     requests.initialize(eventBus, transport);
 
-    manager.addListener(new QosListener() {
-      @Override
-      public void tick(List<QosEntry> list) {
-        queueLength.setText("" + list.size());
-      }
+    SimpleNotification sn = new SimpleNotification(manager);
 
-      @Override
-      public void retryStarting(int retryCount2) {
-        retryCount.setText("" + retryCount2);
-      }
+
+    manager.addQosEventHandler(new QosEventHandler() {
 
     @Override
-    public void retryEnding() {
-        retryCount.setText("-");
+    public void onQosEvent(QosEvent qosEvent) {
+        queueLength.setText("" + qosEvent.getList().size());
+
+        if (qosEvent.getRetryCount() > 0) {
+            retryCount.setText("" + qosEvent.getRetryCount());
+        } else {
+            retryCount.setText("-");
+        }
     }
     });
 

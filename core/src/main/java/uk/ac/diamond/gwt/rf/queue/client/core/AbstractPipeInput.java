@@ -20,16 +20,16 @@ public abstract class AbstractPipeInput implements PipeInput {
 
     @Override
     public void add(Request r) {
-        add(new RfEntry(r));
+        add(new RequestContextEntry(r));
     }
 
     @Override
     public void add(RequestContext r) {
-        add(new RfEntry(r));
+        add(new RequestContextEntry(r));
     }
 
     @Override
     public void add(RequestContext r, Receiver recv) {
-        add(new RfEntry(r, recv));
+        add(new RequestContextEntry(r, recv));
     }
 }

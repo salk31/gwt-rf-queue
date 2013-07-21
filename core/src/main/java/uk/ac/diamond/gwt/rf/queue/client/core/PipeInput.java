@@ -16,8 +16,6 @@ import com.google.web.bindery.requestfactory.shared.RequestContext;
 /**
  * Add more convenient ways to add to a Pipe.
  *
- * XXX enum for state
- *
  */
 public interface PipeInput extends PipeTarget {
 

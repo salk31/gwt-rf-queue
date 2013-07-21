@@ -20,25 +20,19 @@ import com.google.web.bindery.requestfactory.shared.RequestTransport;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
 /**
- * A serialised RequestContext.
+ * An eagerly serialised RequestContext.
  */
 public class TransportEntry extends QosEntry {
+
     private final String payload;
+
     private final RequestTransport.TransportReceiver receiver;
 
     private State state;
 
-    @Override
-    public State getState() {
-        return state;
-    }
-
-    private void setState(State state) {
-        this.state = state;
-    }
-
-    // TODO 00 don't want this sig? Serialise on attach?
-    public TransportEntry(QosRequestTransport transport, RequestContext requestContext, Receiver recv) {
+    // TODO 00 unit test can create lots of these, fire when feel like it
+    public TransportEntry(RequestContext requestContext, Receiver recv) {
+        QosRequestTransport transport = (QosRequestTransport) requestContext.getRequestFactory().getRequestTransport();
         transport.startBatch();
 
         // XXX remove the need for this
@@ -67,7 +61,8 @@ public class TransportEntry extends QosEntry {
         }
     }
 
-    public TransportEntry(java.lang.String payload2, RequestTransport.TransportReceiver receiver2) {
+
+    TransportEntry(java.lang.String payload2, RequestTransport.TransportReceiver receiver2) {
         this.payload = payload2;
         this.receiver = receiver2;
     }
@@ -97,5 +92,14 @@ public class TransportEntry extends QosEntry {
     @Override
     protected void reset() {
         state = null;
+    }
+
+    @Override
+    public State getState() {
+        return state;
+    }
+
+    private void setState(State state) {
+        this.state = state;
     }
 }

@@ -1,9 +1,23 @@
+/*
+ * Copyright (c) 2012 European Synchrotron Radiation Facility,
+ *                    Diamond Light Source Ltd.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package uk.ac.diamond.gwt.rf.queue.client.core;
 
 import java.util.List;
 
 import com.google.gwt.event.shared.GwtEvent;
 
+/**
+ *
+ * Event fired after each 'click' of the QosManager.
+ *
+ */
 public class QosEvent extends GwtEvent<QosEventHandler>{
 
     /**

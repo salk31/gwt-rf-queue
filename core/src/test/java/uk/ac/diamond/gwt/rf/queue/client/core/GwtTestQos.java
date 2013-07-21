@@ -51,8 +51,8 @@ public class GwtTestQos extends GWTTestCase {
             List<QosEntry> list = manager.getList();
 
             assertEquals(2, list.size());
-            assertTrue(userClick == ((RfEntry) list.get(0)).getRequestContext());
-            assertTrue(validation1 == ((RfEntry) list.get(1)).getRequestContext());
+            assertTrue(userClick == ((RequestContextEntry) list.get(0)).getRequestContext());
+            assertTrue(validation1 == ((RequestContextEntry) list.get(1)).getRequestContext());
         }
 
         NonAtomicBatch batch = new NonAtomicBatch();

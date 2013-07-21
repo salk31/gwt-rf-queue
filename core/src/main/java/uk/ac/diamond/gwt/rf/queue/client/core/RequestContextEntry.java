@@ -16,40 +16,31 @@ import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.RequestTransport;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
+// TODO 00 unit test this being re-fired on each retry
 /**
- *
- *
- * @author yjs77802
+ * RequestFactory QosEntry.
  */
-class RfEntry extends QosEntry {
-    private final Receiver receiver;
-
+class RequestContextEntry extends QosEntry {
     private final RequestContext requestContext;
+
+    private final Receiver receiver;
 
     private State state;
 
-    @Override
-    public State getState() {
-        return state;
-    }
 
-    private void setState(State state) {
-        this.state = state;
-    }
-
-    public RfEntry(Request request) {
+    public RequestContextEntry(Request request) {
         this(request.getRequestContext());
     }
 
-    public RfEntry(Request request, Receiver receiver2) {
+    public RequestContextEntry(Request request, Receiver receiver2) {
         this(request.getRequestContext(), receiver2);
     }
 
-    public RfEntry(RequestContext requestContext2) {
+    public RequestContextEntry(RequestContext requestContext2) {
         this(requestContext2, null);
     }
 
-    public RfEntry(RequestContext requestContext2, Receiver receiver2) {
+    public RequestContextEntry(RequestContext requestContext2, Receiver receiver2) {
         this.requestContext = requestContext2;
         this.receiver = receiver2;
     }
@@ -85,5 +76,14 @@ class RfEntry extends QosEntry {
     @Override
     protected void reset() {
         state = null;
+    }
+
+    @Override
+    public State getState() {
+        return state;
+    }
+
+    private void setState(State state) {
+        this.state = state;
     }
 }

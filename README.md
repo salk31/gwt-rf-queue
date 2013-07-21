@@ -19,7 +19,6 @@ Roadmap
 * TODO - Semi-respectable unit test coverage.
 * TODO - Refactor the code to be at least readable.
 * TODO - Raise GWT feature requests to add hooks to remove the worst work arounds e.g. custom Processor.
-* TODO - Fix TransportEntry to not require Transport to be passed to it.
 * TODO - Rename AuthFailureDetector to something more generic about "response detector"?
 * TODO - Put in maven central.
 

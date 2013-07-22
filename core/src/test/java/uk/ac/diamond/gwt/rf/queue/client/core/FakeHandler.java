@@ -5,7 +5,7 @@ import java.util.List;
 
 public class FakeHandler implements QosEventHandler {
 
-    private final List<QosEvent> list = new ArrayList();
+    private final List<QosEvent> list = new ArrayList<QosEvent>();
 
     @Override
     public void onQosEvent(QosEvent qosEvent) {

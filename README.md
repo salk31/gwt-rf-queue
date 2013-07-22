@@ -5,14 +5,13 @@ Simple demo http://gwt-rf-queue.appspot.com/ with gwt-rf-queue retrofitted to Dy
 
 Features
 --------
-We would like off the shelf module(s), ideally pure Java/GWT, that do:
+Pure GWT/Java RequestFactory module for:
 * GMail like network retry.
 * Detect/retry auth failure.
 * Can drive the UI to indicate the RequestFactory is busy or idle.
 * Different "quality of service" for different requests.
 * Mechanism to send the contents of an Editor tree to the server multiple times and fire different service methods. e.g. to support background validation on the server
 
-However, we couldn't find it so we ended up writing this.
 
 Roadmap
 -------

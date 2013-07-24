@@ -18,6 +18,7 @@ Roadmap
 * TODO - Semi-respectable unit test coverage.
 * TODO - Raise GWT feature requests to add hooks to remove the worst work arounds e.g. custom Processor.
 * TODO - Rename AuthFailureDetector to something more generic about "response detector"?
+* TODO - Make the demo do something more realistic on auth failure.
 * TODO - Put in maven central.
 
 

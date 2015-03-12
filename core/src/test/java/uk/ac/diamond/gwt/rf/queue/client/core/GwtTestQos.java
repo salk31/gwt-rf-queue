@@ -67,33 +67,32 @@ public class GwtTestQos extends GWTTestCase {
             assertTrue(batch == list.get(1));
         }
     }
-
-
+    
     public void testDelayOnTransportFailure3() throws Exception {
         FakeEntry fakeEntry = new FakeEntry();
 
         pipe.add(fakeEntry);
 
-        manager.tick();
+        manager.fireReady();
         assertEquals(1, fakeEntry.getFiredCount());
 
         fakeEntry.setState(QosEntry.State.FAILED);
 
-        manager.tick();
+        manager.fireReady();
         assertEquals(1, fakeEntry.getFiredCount());
 
-        manager.tock();
+        manager.tick();
         assertEquals(2, fakeEntry.getFiredCount());
         // should be there marked FAIL but not execute again
 
     }
 
-    public void testClearRetryOnTick() {
+    public void testClearRetryImmediatelyOnStateChange() {
         FakeEntry e0 = new FakeEntry();
         pipe.add(e0);
 
         e0.setState(QosEntry.State.FAILED);
-        manager.tock();
+        manager.tick();
 
         assertEquals(1, handler.getLast().getRetryCount());
 
@@ -108,11 +107,11 @@ public class GwtTestQos extends GWTTestCase {
 
         fakeEntry.setState(QosEntry.State.FAILED);
 
-        manager.tock();
+        manager.tick();
 
         fakeEntry.setState(QosEntry.State.PENDING);
 
-        manager.tock();
+        manager.tick();
 
         assertEquals(1, handler.getLast().getRetryCount());
 

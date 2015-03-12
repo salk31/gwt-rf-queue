@@ -47,19 +47,19 @@ public class QosManager implements PipeTarget {
         Scheduler.get().scheduleFixedPeriod(new RepeatingCommand() {
             @Override
             public boolean execute() {
-                tock();
+                tick();
                 return true;
             }
         }, 1000);
     }
 
-    void tock() {
+    void tick() {
         if (retryCountDown == 0) {
             retry();
         } else {
             retryCountDown--;
         }
-        tick();
+        fireReady();
     }
 
     void preProcess() {
@@ -91,7 +91,7 @@ public class QosManager implements PipeTarget {
         return false;
     }
 
-    void tick() {
+    void fireReady() {
         Iterator<QosEntry> it = getList().iterator();
         while (it.hasNext()) {
             QosEntry entry = it.next();
@@ -129,7 +129,7 @@ public class QosManager implements PipeTarget {
         Scheduler.get().scheduleFinally(new ScheduledCommand() {
             @Override
             public void execute() {
-                tick();
+                fireReady();
             }
         });
     }
@@ -177,6 +177,6 @@ public class QosManager implements PipeTarget {
     public void retryNow() {
         retryCountDown = 0;
         retryMax = 2;
-        tick();
+        fireReady();
     }
 }

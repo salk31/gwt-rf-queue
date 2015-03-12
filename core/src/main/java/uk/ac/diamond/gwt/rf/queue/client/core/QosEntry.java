@@ -62,9 +62,6 @@ public abstract class QosEntry implements Comparable<QosEntry> {
         return getState() == null;
     }
 
-    public boolean isDone() {
-        return "DONE".equals(getState());
-    }
 
     @Override
     public int compareTo(QosEntry other) {
@@ -82,7 +79,7 @@ public abstract class QosEntry implements Comparable<QosEntry> {
     }
 
     protected void notifyChange() {
-        manager.tick();
+        manager.fireReady();
     }
 
     protected abstract void reset();

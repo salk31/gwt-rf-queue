@@ -106,7 +106,7 @@ public class QosManager implements PipeTarget {
             }
         }
         if (list.isEmpty()) {
-            backOff.endRetry();
+            backOff.reset();
         }
 
         Document.get().getDocumentElement().setPropertyString("qosPending", "" + list.size());
@@ -159,8 +159,7 @@ public class QosManager implements PipeTarget {
     }
 
     public void retryNow() {
-        retryCountDown = 0;
-        retryCurrentInterval = 2;
-        fireReady();
+        backOff.reset();
+        tick();
     }
 }

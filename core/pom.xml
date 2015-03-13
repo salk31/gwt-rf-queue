@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <gwt.version>2.5.1</gwt.version>
+        <gwt.version>2.6.1</gwt.version>
     </properties>
 
 
@@ -74,7 +74,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>${gwt.version}</version>
                 <configuration>
                     <modules>
                         <module>uk.ac.diamond.gwt.rf.queue.GwtRfQueue</module>

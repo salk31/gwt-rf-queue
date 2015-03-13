@@ -28,15 +28,13 @@ public class QosManager implements PipeTarget {
 
     private final static int TIMER_PERIOD = 1000;
 
+    private final static int RETRY_INTERVAL_MAX = 60;
+
     private final List<QosEntry> list = new ArrayList<QosEntry>();
 
     private final HandlerManager handlerManager = new HandlerManager(this);
 
-    private int retryCount;
-
-    private int retryCountDown;
-
-    private int retryMax;
+    private BackOff backOff = new BackOff();
 
     private QosRequestTransport requestTransport;
 
@@ -50,14 +48,15 @@ public class QosManager implements PipeTarget {
                 tick();
                 return true;
             }
-        }, 1000);
+        }, TIMER_PERIOD);
     }
 
     void tick() {
-        if (retryCountDown == 0) {
-            retry();
-        } else {
-            retryCountDown--;
+        if (!backOff.sleepAgain()) {
+            boolean foundFailed = resetFailed();
+            if (foundFailed) {
+                backOff.retry();
+            }
         }
         fireReady();
     }
@@ -106,16 +105,12 @@ public class QosManager implements PipeTarget {
                 it.remove();
             }
         }
-        if (retryCount > 0) {
-            if (list.isEmpty()) {
-                // end retry
-                retryCount = 0;
-                retryCountDown = 0;
-            }
+        if (list.isEmpty()) {
+            backOff.endRetry();
         }
 
         Document.get().getDocumentElement().setPropertyString("qosPending", "" + list.size());
-        handlerManager.fireEvent(new QosEvent(list, retryCount, retryCountDown * TIMER_PERIOD ));
+        handlerManager.fireEvent(new QosEvent(list, backOff.getAttemptCount(), backOff.getCountDown() * TIMER_PERIOD ));
     }
 
 
@@ -139,27 +134,16 @@ public class QosManager implements PipeTarget {
         return list;
     }
 
-    void retry() {
-        boolean backOff = false;
+    boolean resetFailed() {
+        boolean foundFailed = false;
         for (QosEntry q : list) {
             if (QosEntry.State.FAILED.equals(q.getState())) {
                 q.reset();
-                backOff = true;
+                foundFailed = true;
             }
         }
-        if (retryCount > 0) {
-            if (!list.isEmpty()) {
-                // continue retry
-                retryCount++;
-                retryMax *= 2;
-                retryCountDown = retryMax;
-            }
-        } else if (backOff) {
-            // start retry
-            retryCount++;
-            retryMax = 2;
-            retryCountDown = retryMax;
-        }
+        
+        return foundFailed;
     }
 
     public HandlerRegistration addQosEventHandler(QosEventHandler handler) {
@@ -176,7 +160,7 @@ public class QosManager implements PipeTarget {
 
     public void retryNow() {
         retryCountDown = 0;
-        retryMax = 2;
+        retryCurrentInterval = 2;
         fireReady();
     }
 }

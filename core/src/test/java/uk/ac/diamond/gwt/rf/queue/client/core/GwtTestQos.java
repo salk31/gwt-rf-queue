@@ -68,7 +68,7 @@ public class GwtTestQos extends GWTTestCase {
         }
     }
     
-    public void testDelayOnTransportFailure3() throws Exception {
+    public void testDelayOnTransportFailure() throws Exception {
         FakeEntry fakeEntry = new FakeEntry();
 
         pipe.add(fakeEntry);
@@ -117,6 +117,42 @@ public class GwtTestQos extends GWTTestCase {
 
     }
 
+    public void testBackOff() throws Exception {
+      FakeEntry fakeEntry = new FakeEntry();
+
+      pipe.add(fakeEntry);
+      manager.fireReady();  // make sync
+      
+      assertEquals(1, fakeEntry.getFiredCount());
+      fakeEntry.setState(QosEntry.State.FAILED);
+
+      manager.tick(); // 1st retry 1
+      assertEquals(2, fakeEntry.getFiredCount());
+      fakeEntry.setState(QosEntry.State.FAILED);
+
+      manager.tick(); // 2nd retry 1/2
+      assertEquals(2, fakeEntry.getFiredCount());
+
+      manager.tick(); // 2nd retry 2/2
+      assertEquals(3, fakeEntry.getFiredCount());
+      fakeEntry.setState(QosEntry.State.FAILED);
+
+      manager.tick(); // 3rd retry 1/4
+      assertEquals(3, fakeEntry.getFiredCount());
+      
+      manager.tick(); // 3rd retry 2/4
+      assertEquals(3, fakeEntry.getFiredCount());
+      
+      manager.tick(); // 3rd retry 3/4
+      assertEquals(3, fakeEntry.getFiredCount());
+      
+      manager.tick(); // 3rd retry 4/4
+      assertEquals(4, fakeEntry.getFiredCount());
+      fakeEntry.setState(QosEntry.State.FAILED);
+      
+    
+  }
+    
     @Override
     public String getModuleName() {
         return "uk.ac.diamond.gwt.rf.queue.GwtRfQueue";

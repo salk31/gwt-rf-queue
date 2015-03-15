@@ -28,8 +28,6 @@ public class QosManager implements PipeTarget {
 
     private final static int TIMER_PERIOD = 1000;
 
-    private final static int RETRY_INTERVAL_MAX = 60;
-
     private final List<QosEntry> list = new ArrayList<QosEntry>();
 
     private final HandlerManager handlerManager = new HandlerManager(this);

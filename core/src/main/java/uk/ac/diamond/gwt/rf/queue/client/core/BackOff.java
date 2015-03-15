@@ -29,7 +29,7 @@ public class BackOff {
     }
 
     public boolean sleepAgain() {
-        if (countDown > 0) {
+        if (countDown > 1) {
             countDown--;
             return true;
         }
@@ -44,7 +44,7 @@ public class BackOff {
             }
         } else {
             // start new attempt
-            currentInterval = 1;
+            currentInterval = 2;
         }
         attemptCount++;
         countDown = currentInterval;
@@ -56,5 +56,14 @@ public class BackOff {
 
     public int getCountDown() {
       return countDown;
+    }
+    
+    public String toString() {
+        return "countDown="
+             + countDown
+             + " currentInterval="
+             + currentInterval
+             + " attemptCount="
+             + attemptCount;
     }
 }

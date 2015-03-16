@@ -67,7 +67,7 @@ public class GwtTestQos extends GWTTestCase {
             assertTrue(batch == list.get(1));
         }
     }
-    
+
     public void testDelayOnTransportFailure() throws Exception {
         FakeEntry fakeEntry = new FakeEntry();
 
@@ -122,7 +122,7 @@ public class GwtTestQos extends GWTTestCase {
 
       pipe.add(fakeEntry);
       manager.fireReady();  // make sync
-      
+
       assertEquals(1, fakeEntry.getFiredCount());
       fakeEntry.setState(QosEntry.State.FAILED);
 
@@ -139,20 +139,20 @@ public class GwtTestQos extends GWTTestCase {
 
       manager.tick(); // 3rd retry 1/4
       assertEquals(3, fakeEntry.getFiredCount());
-      
+
       manager.tick(); // 3rd retry 2/4
       assertEquals(3, fakeEntry.getFiredCount());
-      
+
       manager.tick(); // 3rd retry 3/4
       assertEquals(3, fakeEntry.getFiredCount());
-      
+
       manager.tick(); // 3rd retry 4/4
       assertEquals(4, fakeEntry.getFiredCount());
       fakeEntry.setState(QosEntry.State.FAILED);
-      
-    
-  }
-    
+
+
+    }
+
     @Override
     public String getModuleName() {
         return "uk.ac.diamond.gwt.rf.queue.GwtRfQueue";

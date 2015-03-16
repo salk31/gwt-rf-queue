@@ -140,7 +140,7 @@ public class QosManager implements PipeTarget {
                 foundFailed = true;
             }
         }
-        
+
         return foundFailed;
     }
 

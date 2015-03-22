@@ -100,10 +100,12 @@ public class QosRequestTransport extends DefaultRequestTransport {
             request.receiverForEntry = nextReceiverForEntry;
 
             if (batch != null) {
+                // is just a normal explicit batch request
                 batch.add(request);
             }
 
             if (batch == null) {
+                // is an implicit batch to just capture
                 batch = new ArrayList<BatchedRequest>();
                 batch.add(request);
             }
